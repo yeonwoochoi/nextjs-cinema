@@ -27,7 +27,7 @@ export default function SearchableLayout({ children }: { children: ReactNode }) 
 
   return (
     <div>
-      <div className="flex w-full gap-2 h-12 my-2 px-4">
+      <div className="flex w-full gap-2 h-12 mt-2 mb-6">
         <input
           type="text"
           placeholder="검색어를 입력하세요 ..."
