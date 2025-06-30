@@ -1,19 +1,51 @@
-import { useRouter } from "next/router";
-import allMovies from '@/mock/movies.json'
-import { MovieData } from "@/types";
+import { GetServerSideProps } from "next";
+import { MovieData } from "@/types/types";
+import ErrorMessage from "@/components/error-message";
+import fetchOneMovie from "@/lib/fetch-one-movie";
 
-export default function Page() {
-  const router = useRouter()
-  const id = router.query.id as string
+interface MovieDetailPageProps {
+  movie: MovieData | null,
+  error?: string
+}
 
-  if (!id || Array.isArray(id)) {
-    return <div className="text-4xl font-bold mt-6">Invalid ID</div>;
+export const getServerSideProps: GetServerSideProps<MovieDetailPageProps> = async (context) => {
+  const { params } = context
+  try {
+    const { id } = params
+    if (!id) {
+      return {
+        props: {
+          movie: null,
+          error: '잘못된 요청입니다.',
+        }
+      }
+    }
+    const { data, error } = await fetchOneMovie(id)
+    if (!data || error) {
+      throw new Error(error || '영화 데이터를 불러오지 못했습니다.')
+    }
+
+    return {
+      props: {
+        movie: data
+      }
+    }
+  } catch (e) {
+    console.error(e)
+
+    return {
+      props: {
+        movie: null,
+        error: e,
+      }
+    }
   }
+}
 
-  const movie = allMovies.find(movie => String(movie.id) === id)
 
-  if (!movie) {
-    return <div className="text-4xl font-bold mt-6">Loading...</div>
+export default function Page({movie, error}: MovieDetailPageProps) {
+  if (!movie || error) {
+    return <ErrorMessage error={error || "영화 데이터를 불러오지 못했습니다."} />
   }
 
   const {
