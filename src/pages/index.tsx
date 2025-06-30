@@ -1,20 +1,62 @@
 import { ReactElement } from "react";
 import SearchableLayout from "@/components/searchable-layout";
-import allMovies from '@/mock/movies.json'
 import MovieItem from "@/components/movie-item";
+import fetchRandomMovies from "@/lib/fetch-random-movies";
+import fetchMovies from "@/lib/fetch-movies";
+import { MovieData } from "@/types/types";
+import { GetServerSideProps } from "next";
+import ErrorMessage from "@/components/error-message";
 
-export default function Home() {
+interface HomePageProps {
+  allMovies: MovieData[],
+  recoMovies: MovieData[],
+  error?: string
+}
+
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => {
+  try {
+    const [allMoviesResponse, recoMoviesResponse] = await Promise.all([
+      fetchMovies(),
+      fetchRandomMovies()
+    ])
+
+    if (allMoviesResponse.error || recoMoviesResponse.error) {
+      throw new Error(allMoviesResponse.error || recoMoviesResponse.error);
+    }
+
+    return {
+      props: {
+        allMovies: allMoviesResponse.data || [],
+        recoMovies: recoMoviesResponse.data || [],
+      }
+    }
+  } catch (e) {
+    console.error(e)
+
+    return {
+      props: {
+        allMovies: [],
+        recoMovies: [],
+        error: '영화 데이터를 불러오지 못했습니다.',
+      }
+    }
+  }
+}
+
+
+export default function Home({ allMovies, recoMovies, error }: HomePageProps) {
+  if (error) {
+    return <ErrorMessage error={error} />
+  }
+
   return (
     <div className="flex flex-col gap-y-16 py-4">
       <div>
         <div className="text-lg font-bold pb-4">지금 가장 추천하는 영화</div>
         <div className="grid grid-cols-3 gap-1">
-          {allMovies
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 3)
-            .map(movie => {
-              return <MovieItem key={movie.id} {...movie} />
-            })}
+          {recoMovies.map(movie => {
+            return <MovieItem key={movie.id} {...movie} />
+          })}
         </div>
       </div>
       <div>
