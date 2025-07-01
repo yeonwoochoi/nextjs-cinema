@@ -19,10 +19,11 @@ export default async function fetchMovies(q?: string): Promise<ApiResponse<Movie
       data: allMovies,
     }
   } catch (e) {
-    console.error(e)
+    const errorMessage = e instanceof Error ? e.message : String(e)
+    console.error(errorMessage)
     return {
       data: [],
-      error: e,
+      error: errorMessage,
     }
   }
 }

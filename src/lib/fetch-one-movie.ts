@@ -15,10 +15,11 @@ export default async function fetchOneMovie (id: string): Promise<ApiResponse<Mo
       data: movie
     }
   } catch (e) {
-    console.error(e)
+    const errorMessage = e instanceof Error ? e.message : String(e)
+    console.error(errorMessage)
     return {
       data: null,
-      error: e
+      error: errorMessage
     }
   }
 }

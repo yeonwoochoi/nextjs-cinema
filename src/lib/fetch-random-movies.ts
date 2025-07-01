@@ -14,10 +14,11 @@ export default async function fetchRandomMovies(): Promise<ApiResponse<MovieData
       data: recoMovies
     }
   } catch (e) {
-    console.error(e)
+    const errorMessage = e instanceof Error ? e.message : String(e)
+    console.error(errorMessage)
     return {
       data: [],
-      error: e,
+      error: errorMessage,
     }
   }
 }

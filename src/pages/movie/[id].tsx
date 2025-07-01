@@ -31,12 +31,13 @@ export const getServerSideProps: GetServerSideProps<MovieDetailPageProps> = asyn
       }
     }
   } catch (e) {
-    console.error(e)
+    const errorMessage = e instanceof Error ? e.message : String(e)
+    console.error(errorMessage)
 
     return {
       props: {
         movie: null,
-        error: e,
+        error: errorMessage,
       }
     }
   }
