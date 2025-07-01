@@ -6,6 +6,7 @@ import fetchMovies from "@/lib/fetch-movies";
 import { MovieData } from "@/types/types";
 import { GetStaticProps } from "next";
 import ErrorMessage from "@/components/error-message";
+import Head from 'next/head'
 
 interface HomePageProps {
   allMovies: MovieData[],
@@ -38,7 +39,8 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
         allMovies: [],
         recoMovies: [],
         error: '영화 데이터를 불러오지 못했습니다.',
-      }
+      },
+      revalidate: 60
     }
   }
 }
@@ -50,24 +52,32 @@ export default function Home({ allMovies, recoMovies, error }: HomePageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-y-16 py-4">
-      <div>
-        <div className="text-lg font-bold pb-4">지금 가장 추천하는 영화</div>
-        <div className="grid grid-cols-3 gap-1">
-          {recoMovies.map(movie => {
-            return <MovieItem key={movie.id} {...movie} />
-          })}
+    <>
+      <Head>
+        <title>한입 씨네마</title>
+        <meta property="og:image" content="/thumbnail.png" />
+        <meta property="og:title" content="한입 씨네마" />
+        <meta property="og:description" content="한입 씨네마에 등록된 영화들을 만나보세요" />
+      </Head>
+      <div className="flex flex-col gap-y-16 py-4">
+        <div>
+          <div className="text-lg font-bold pb-4">지금 가장 추천하는 영화</div>
+          <div className="grid grid-cols-3 gap-1">
+            {recoMovies.map(movie => {
+              return <MovieItem key={movie.id} {...movie} />
+            })}
+          </div>
+        </div>
+        <div>
+          <div className="text-lg font-bold pb-4">등록된 모든 영화</div>
+          <div className="grid grid-cols-5 gap-1">
+            {allMovies.map(movie => {
+              return <MovieItem key={movie.id} {...movie} />
+            })}
+          </div>
         </div>
       </div>
-      <div>
-        <div className="text-lg font-bold pb-4">등록된 모든 영화</div>
-        <div className="grid grid-cols-5 gap-1">
-          {allMovies.map(movie => {
-            return <MovieItem key={movie.id} {...movie} />
-          })}
-        </div>
-      </div>
-    </div>
+    </>
   )
 }
 

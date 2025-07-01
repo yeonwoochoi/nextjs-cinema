@@ -6,6 +6,7 @@ import { MovieData } from "@/types/types";
 import fetchMovies from "@/lib/fetch-movies";
 import LoadingMessage from "@/components/loading-message";
 import ErrorMessage from "@/components/error-message";
+import Head from "next/head";
 
 export default function Page() {
   const [loading, setLoading] = useState<boolean>(false)
@@ -41,10 +42,18 @@ export default function Page() {
   if (error) return <ErrorMessage error={error} />
 
   return (
-    <div className="grid grid-cols-3 gap-1">
-      {movies.map(movie => {
-        return <MovieItem key={movie.id} {...movie} />
-      })}
+    <div>
+      <Head>
+        <title>한입 씨네마 - 검색결과</title>
+        <meta property="og:image" content="/thumbnail.png" />
+        <meta property="og:title" content="한입 씨네마 - 검색결과" />
+        <meta property="og:description" content="한입 씨네마에 등록된 영화들을 만나보세요" />
+      </Head>
+      <div className="grid grid-cols-3 gap-1">
+        {movies.map(movie => {
+          return <MovieItem key={movie.id} {...movie} />
+        })}
+      </div>
     </div>
   )
 }

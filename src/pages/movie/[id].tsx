@@ -6,6 +6,7 @@ import fetchRandomMovies from "@/lib/fetch-random-movies";
 import { ApiResponse } from "@/types/api";
 import { useRouter } from "next/router";
 import LoadingMessage from "@/components/loading-message";
+import Head from "next/head";
 
 interface MovieDetailPageProps {
   movie: MovieData | null,
@@ -75,7 +76,16 @@ export default function Page({movie, error}: MovieDetailPageProps) {
   const router = useRouter()
 
   if (router.isFallback) {
-    return <LoadingMessage />
+    return (
+      <LoadingMessage>
+        <Head>
+          <title>한입 씨네마</title>
+          <meta property="og:image" content="/thumbnail.png" />
+          <meta property="og:title" content="한입 씨네마" />
+          <meta property="og:description" content="한입 씨네마에 등록된 영화들을 만나보세요" />
+        </Head>
+      </LoadingMessage>
+    )
   }
 
   if (!movie || error) {
@@ -94,21 +104,29 @@ export default function Page({movie, error}: MovieDetailPageProps) {
   }: MovieData = movie
 
   return (
-    <div className="flex flex-col gap-2.5">
-      <div
-        className="relative flex justify-center p-5 bg-no-repeat bg-cover"
-        style={{ backgroundImage: `url('${posterImgUrl}')` }}
-      >
-        <img src={posterImgUrl} alt={title} className="z-[1] h-full max-h-[350px]"/>
-        <div className="absolute inset-0 bg-black/70" />
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta property="og:image" content={posterImgUrl} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+      </Head>
+      <div className="flex flex-col gap-2.5">
+        <div
+          className="relative flex justify-center p-5 bg-no-repeat bg-cover"
+          style={{ backgroundImage: `url('${posterImgUrl}')` }}
+        >
+          <img src={posterImgUrl} alt={title} className="z-[1] h-full max-h-[350px]"/>
+          <div className="absolute inset-0 bg-black/70" />
+        </div>
+        <div className="font-bold text-2xl">{title}</div>
+        <div>{`${releaseDate} / ${genres.join(', ')} / ${runtime}분`}</div>
+        <div className="mb-2">{company}</div>
+        <div className="font-bold">{subTitle}</div>
+        <div className="leading-[1.3] whitespace-pre-line">
+          {description}
+        </div>
       </div>
-      <div className="font-bold text-2xl">{title}</div>
-      <div>{`${releaseDate} / ${genres.join(', ')} / ${runtime}분`}</div>
-      <div className="mb-2">{company}</div>
-      <div className="font-bold">{subTitle}</div>
-      <div className="leading-[1.3] whitespace-pre-line">
-        {description}
-      </div>
-    </div>
+    </>
   )
 }
