@@ -4,7 +4,7 @@ import MovieItem from "@/components/movie-item";
 import fetchRandomMovies from "@/lib/fetch-random-movies";
 import fetchMovies from "@/lib/fetch-movies";
 import { MovieData } from "@/types/types";
-import { GetServerSideProps } from "next";
+import { GetStaticProps } from "next";
 import ErrorMessage from "@/components/error-message";
 
 interface HomePageProps {
@@ -13,7 +13,7 @@ interface HomePageProps {
   error?: string
 }
 
-export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => {
+export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
   try {
     const [allMoviesResponse, recoMoviesResponse] = await Promise.all([
       fetchMovies(),
