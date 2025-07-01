@@ -1,18 +1,45 @@
-import { GetServerSideProps } from "next";
+import { GetStaticProps } from "next";
 import { MovieData } from "@/types/types";
 import ErrorMessage from "@/components/error-message";
 import fetchOneMovie from "@/lib/fetch-one-movie";
+import fetchRandomMovies from "@/lib/fetch-random-movies";
+import { ApiResponse } from "@/types/api";
+import { useRouter } from "next/router";
+import LoadingMessage from "@/components/loading-message";
 
 interface MovieDetailPageProps {
   movie: MovieData | null,
   error?: string
 }
 
-export const getServerSideProps: GetServerSideProps<MovieDetailPageProps> = async (context) => {
-  const { params } = context
+export const getStaticPaths = async () => {
   try {
-    const { id } = params
-    if (!id) {
+    const { data, error }: ApiResponse<MovieData[]> = await fetchRandomMovies();
+    if (!data || error) {
+      throw new Error(error)
+    }
+    return {
+      paths: data.map(movie => ({ params: { id: `${movie.id}` }})),
+      fallback: 'blocking'
+    }
+  } catch (e) {
+    console.error(e)
+    return {
+      paths: [
+        { params: { id: "1" }},
+        { params: { id: "2" }},
+        { params: { id: "3" }}
+      ],
+      fallback: 'blocking'
+    }
+  }
+}
+
+export const getStaticProps: GetStaticProps<MovieDetailPageProps> = async (context) => {
+  const { params } = context
+
+  try {
+    if (!params?.id || Array.isArray(params.id)) {
       return {
         props: {
           movie: null,
@@ -20,7 +47,7 @@ export const getServerSideProps: GetServerSideProps<MovieDetailPageProps> = asyn
         }
       }
     }
-    const { data, error } = await fetchOneMovie(id)
+    const { data, error } = await fetchOneMovie(params.id)
     if (!data || error) {
       throw new Error(error || '영화 데이터를 불러오지 못했습니다.')
     }
@@ -45,6 +72,12 @@ export const getServerSideProps: GetServerSideProps<MovieDetailPageProps> = asyn
 
 
 export default function Page({movie, error}: MovieDetailPageProps) {
+  const router = useRouter()
+
+  if (router.isFallback) {
+    return <LoadingMessage />
+  }
+
   if (!movie || error) {
     return <ErrorMessage error={error || "영화 데이터를 불러오지 못했습니다."} />
   }
