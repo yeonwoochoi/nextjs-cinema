@@ -49,11 +49,12 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
 
 
 export default function Home({ allMovies, recoMovies, error }: HomePageProps) {
+  const router = useRouter()
+
   if (error) {
     return <ErrorMessage error={error} />
   }
 
-  const router = useRouter()
   if (router.isFallback) {
     return <LoadingMessage />
   }
