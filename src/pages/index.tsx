@@ -1,14 +1,14 @@
-import { ReactElement } from "react";
+import { ReactElement } from "react"
 import Head from 'next/head'
-import { GetStaticProps } from "next";
-import { useRouter } from "next/router";
-import SearchableLayout from "@/components/searchable-layout";
-import MovieItem from "@/components/movie-item";
-import ErrorMessage from "@/components/error-message";
-import LoadingMessage from "@/components/loading-message";
-import fetchRandomMovies from "@/lib/fetch-random-movies";
-import fetchMovies from "@/lib/fetch-movies";
-import { MovieData } from "@/types/types";
+import { GetStaticProps } from "next"
+import { useRouter } from "next/router"
+import SearchableLayout from "@/components/searchable-layout"
+import MovieItem from "@/components/movie-item"
+import ErrorMessage from "@/components/error-message"
+import LoadingMessage from "@/components/loading-message"
+import fetchRandomMovies from "@/lib/fetch-random-movies"
+import fetchMovies from "@/lib/fetch-movies"
+import { MovieData } from "@/types/types"
 
 interface HomePageProps {
   allMovies: MovieData[],
@@ -24,7 +24,7 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
     ])
 
     if (allMoviesResponse.error || recoMoviesResponse.error) {
-      throw new Error(allMoviesResponse.error || recoMoviesResponse.error);
+      throw new Error(allMoviesResponse.error || recoMoviesResponse.error)
     }
 
     return {
