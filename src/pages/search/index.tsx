@@ -17,6 +17,8 @@ export default function Page() {
   const q = router.query.q
 
   const fetchSearchResult = async () => {
+    setLoading(true)
+    setError("")
     try {
       const { data, error } = await fetchMovies(q as string)
       if (error || !data || data.length === 0) {
